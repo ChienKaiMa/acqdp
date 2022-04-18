@@ -22,6 +22,8 @@ def GRCS(f, in_state=0, simplify=False):
                 c.append(circuit.CompState[(in_state >> (n - qubit - 1)) & 1],
                          [qubit], -1)
         gate_table = {
+            'x':
+                circuit.XGate,
             'h':
                 circuit.HGate,
             'x_1_2':
@@ -40,6 +42,8 @@ def GRCS(f, in_state=0, simplify=False):
                     np.array([[1 / np.sqrt(2), -np.sqrt(1j) / np.sqrt(2)],
                               [np.sqrt(-1j) / np.sqrt(2), 1 / np.sqrt(2)]]),
                     name='W_1_2'),
+            'cx':
+                circuit.CNOTGate,
             'cz':
                 circuit.CZGate,
             't':
@@ -49,7 +53,9 @@ def GRCS(f, in_state=0, simplify=False):
         }
 
         size_table = {
+            'x': 1,
             'h': 1,
+            'cx': 2,
             'cz': 2,
             't': 1,
             'x_1_2': 1,
@@ -125,7 +131,9 @@ if __name__ == '__main__':
     tn.cast(np.complex64)
     tn.expand(recursive=True)
 
-    open_indices = [0, 1, 2, 3, 4, 5]
+    # open_indices = [0, 1, 2, 3, 4, 5, 6]
+    # open_indices = [i for i in range(n)]
+    open_indices = [0]
     for i in range(n):
         if i not in open_indices:
             tn.fix_edge(tn.open_edges[i], 0)
@@ -153,13 +161,16 @@ if __name__ == '__main__':
     print("TaiZhang Preprocessing Time --- %s seconds ---" % (pp_time_TZ - start_time_TZ))
     start_time = time.time()
     results = 0
-    num_samps = 5
+    num_samps = 1
     tsk.cast('complex64')
     for i in range(num_samps):
         res = tsk[i].execute(**kwargs)
         results += res
     compute_time = time.time()
-    print(results)
+    # print(results)
+    # print(results[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0])
+    unraveled_indices = np.unravel_index(0, results.shape)
+    print(results[unraveled_indices])
     tm = timedelta(seconds=args.num_amplitudes * (compute_time - start_time) * tsk.length / num_samps / 27648)
     print("Compute Time       --- %s seconds ---" % (compute_time - start_time))
     print(f'Projected Running Time  --- {tm} ---')

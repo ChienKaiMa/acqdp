@@ -2,7 +2,7 @@
     "order_finder_name" : "sliced",
     "order_finder_params": {
         "base_order_finder": {
-            "order_finder_name" : "khp",
+            "order_finder_name" : "default",
             "order_finder_params": {
                 "num_iters": 10,
                 "num_threads": 1,
